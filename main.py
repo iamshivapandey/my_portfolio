@@ -9,6 +9,20 @@ st.set_page_config(page_title="Shiva Pandey | Portfolio", page_icon="💼", layo
 profile_img = Image.open("shiva.jpg")  # Your profile image
 resume_file = "Shiva_Resume.pdf"       # Your resume PDF
 
+# ---- Hide Streamlit Menu and Sidebar ----
+st.markdown("""
+    <style>
+        /* Hide the Streamlit Menu */
+        #MainMenu {
+            visibility: hidden;
+        }
+        /* Hide the Streamlit Sidebar */
+        .css-1d391kg {
+            visibility: hidden;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 # ---- Custom CSS ----
 st.markdown("""
     <style>
