@@ -186,7 +186,7 @@ components.html("""
 </style>
 
 <div class="form-container">
-  <form action="{email_token}" method="POST" id="contact-form"
+  <form action="https://formspree.io/f/xanonyoo" method="POST" id="contact-form"
     onsubmit="setTimeout(() => document.getElementById('contact-form').reset(), 100);">
     
     <label for="Name">Your Name</label>
