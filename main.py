@@ -3,7 +3,7 @@ import streamlit as st
 from PIL import Image
 
 email_token = st.secrets["email_token"]
-
+print(email_token)
 # ---- Page Config ----
 st.set_page_config(page_title="Shiva Pandey | Portfolio", page_icon="💼", layout="centered")
 
