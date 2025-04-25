@@ -135,9 +135,13 @@ with st.expander("📈 Crypto Twitter Bot"):
 # ---- Contact Form ----
 st.markdown("<div class='section-header'>📫 Contact Me</div>", unsafe_allow_html=True)
 
-components.html("""
+# Get the email token from Streamlit secrets
+email_token = st.secrets["email_token"]
+
+# Now we embed the form using the email_token variable
+components.html(f"""
 <style>
-  .form-container {
+  .form-container {{
     width: 100%;
     max-width: 600px;
     font-family: 'Segoe UI', sans-serif;
@@ -145,10 +149,10 @@ components.html("""
     background-color: #0e1117;
     padding: 20px 0;
     margin-left: -5px;
-  }
+  }}
 
   .form-container input,
-  .form-container textarea {
+  .form-container textarea {{
     width: 100%;
     padding: 12px;
     margin-top: 6px;
@@ -159,15 +163,15 @@ components.html("""
     border-radius: 6px;
     font-size: 14px;
     transition: border-color 0.2s ease;
-  }
+  }}
 
   .form-container input:focus,
-  .form-container textarea:focus {
+  .form-container textarea:focus {{
     border-color: #4f8bf9;
     outline: none;
-  }
+  }}
 
-  .form-container button {
+  .form-container button {{
     background-color: #4f8bf9;
     color: white;
     padding: 12px 24px;
@@ -176,15 +180,15 @@ components.html("""
     cursor: pointer;
     font-size: 16px;
     transition: background-color 0.3s ease;
-  }
+  }}
 
-  .form-container button:hover {
+  .form-container button:hover {{
     background-color: #397de5;
-  }
+  }}
 </style>
 
 <div class="form-container">
-  <form action="{st.secrets['email_token']}" method="POST" id="contact-form"
+  <form action="{email_token}" method="POST" id="contact-form"
     onsubmit="setTimeout(() => document.getElementById('contact-form').reset(), 100);">
     
     <label for="Name">Your Name</label>
