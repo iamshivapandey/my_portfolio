@@ -1,5 +1,8 @@
+import streamlit.components.v1 as components
 import streamlit as st
 from PIL import Image
+
+email_token = st.secrets["email_token"]
 
 # ---- Page Config ----
 st.set_page_config(page_title="Shiva Pandey | Portfolio", page_icon="💼", layout="centered")
@@ -132,8 +135,6 @@ with st.expander("📈 Crypto Twitter Bot"):
     st.markdown("[🔗 GitHub Repo](https://github.com/iamshivapandey/twitter_bot)")
 
 # ---- Contact Form ----
-import streamlit.components.v1 as components
-
 st.markdown("<div class='section-header'>📫 Contact Me</div>", unsafe_allow_html=True)
 
 components.html("""
@@ -185,7 +186,7 @@ components.html("""
 </style>
 
 <div class="form-container">
-  <form action="https://formspree.io/f/xanonyoo" method="POST" id="contact-form"
+  <form action="{email_token}" method="POST" id="contact-form"
     onsubmit="setTimeout(() => document.getElementById('contact-form').reset(), 100);">
     
     <label for="Name">Your Name</label>
