@@ -3,7 +3,7 @@ import streamlit as st
 from PIL import Image
 
 email_token = st.secrets["email_token"]
-print(email_token)
+
 # ---- Page Config ----
 st.set_page_config(page_title="Shiva Pandey | Portfolio", page_icon="💼", layout="centered")
 
@@ -186,7 +186,7 @@ components.html("""
 </style>
 
 <div class="form-container">
-  <form action="https://formspree.io/f/xanonyoo" method="POST" id="contact-form"
+  <form action="{email_token}" method="POST" id="contact-form"
     onsubmit="setTimeout(() => document.getElementById('contact-form').reset(), 100);">
     
     <label for="Name">Your Name</label>
