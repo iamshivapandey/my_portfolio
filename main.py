@@ -26,6 +26,51 @@ st.markdown("""
 # ---- Custom CSS ----
 st.markdown("""
     <style>
+    @keyframes bounceIn {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        60% {
+            opacity: 1;
+            transform: translateY(-10px);
+        }
+        80% {
+            transform: translateY(5px);
+        }
+        100% {
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes zoomInGlow {
+    0% {
+        opacity: 0;
+        transform: scale(0.5);
+        text-shadow: 0 0 5px rgba(106, 13, 173, 0.8);  /* Royal Purple Glow */
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+        text-shadow: 0 0 10px rgba(106, 13, 173, 1);  /* Strong Royal Purple Glow */
+    }
+}
+
+    @keyframes pulseGlow {
+        0% {
+            opacity: 1;
+            transform: scale(1);
+        }
+        50% {
+            opacity: 0.6;
+            transform: scale(1.1);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
     body, .stApp {
         background-color: #0e1117;
         color: white;
@@ -33,7 +78,9 @@ st.markdown("""
     .title-text {
         font-size: 2.5em;
         font-weight: bold;
+        color: #6A0DAD;
         margin-bottom: -10px;
+        animation: zoomInGlow 1.5s ease-out;
     }
     .subheader {
         font-size: 1.2em;
@@ -42,10 +89,13 @@ st.markdown("""
     }
     .section-header {
         font-size: 1.5em;
+        color: #F5B041;
         font-weight: bold;
         border-bottom: 1px solid #444;
         margin-top: 40px;
         margin-bottom: 10px;
+        animation: bounceIn 2s ease-out;
+
     }
     </style>
 """, unsafe_allow_html=True)
@@ -88,8 +138,46 @@ with col2:
 # ---- Work History ----
 st.markdown("<div class='section-header'>💼 Work History</div>", unsafe_allow_html=True)
 
-st.markdown("##### 🔧 Data Engineer | Demandhelm (Neiron India)")
-st.markdown("<span style='color: white; font-size: 14px; margin-left: 30px;'>**Oct 2023 – Mar 2025**</span>", unsafe_allow_html=True)
+st.markdown("""
+    <style>
+        .job-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #00FFFF;    /* Cyan */
+            font-family: 'Arial', sans-serif;
+            margin-bottom: 0px;
+        }
+        .job-time {
+            font-size: 14px;
+            font-weight: 600;
+            color: #DC143C;    /* Light Blue */
+            font-family: 'Arial', sans-serif;
+            font-style: italic;
+            margin-top: -5px;
+            margin-bottom: -2px;
+            margin-left: 30px;
+        }
+    </style>
+
+    <div class="job-title">🔧 Data Engineer | Velotio Technologies</div>
+    <div class="job-time">Apr 2025 – Present</div>
+""", unsafe_allow_html=True)
+
+
+
+
+st.markdown("""
+- Doing a POC on tools like **Spline**, **DataHub** for tracking Spark job lineage
+""")
+
+# st.markdown("##### 🔧 Data Engineer | Demandhelm (Neiron India)")
+# st.markdown("<span style='color: white; font-size: 14px; margin-left: 30px;'>**Oct 2023 – Mar 2025**</span>", unsafe_allow_html=True)
+
+st.markdown("""
+    <div class="job-title">🔧 Data Engineer | Demandhelm (Neiron India)</div>
+    <div class="job-time">Oct 2023 – Mar 2025</div>
+""", unsafe_allow_html=True)
+
 st.markdown("""
 - Built scalable big data pipeline with AWS Glue, PySpark, Iceberg, and Snowflake  
 - Migrated 350+ ETL jobs from Pandas to PySpark, improving efficiency by 80%  
@@ -99,11 +187,6 @@ st.markdown("""
 - Automated workflows with Airflow on EC2  
 """)
 
-st.markdown("##### 🔧 Data Engineer | Velotio Technologies")
-st.markdown("<span style='color: white; font-size: 14px; margin-left: 30px;'>**Apr 2025 – Present**</span>", unsafe_allow_html=True)
-st.markdown("""
-- Doing a POC on tools like **Spline**, **DataHub** for tracking Spark job lineage
-""")
 
 
 # ---- Projects (Interactive) ----
