@@ -95,7 +95,7 @@ with col2:
     st.markdown("<div class='subheader'>Data Engineer | Big Data | Cloud | Python</div>", unsafe_allow_html=True)
     with open(resume_file, "rb") as pdf_file:
         st.download_button(label="📄 Download Resume", data=pdf_file, file_name="Shiva_Pandey_Resume.pdf", mime="application/pdf")
-    st.markdown("📧 [pandey.shiva625@gmail.com](mailto:pandey.shiva625@gmail.com) &nbsp; | &nbsp; [LinkedIn](https://www.linkedin.com/in/shivaapandey/) &nbsp; | &nbsp; [GitHub](https://github.com/iamshivapandey) | &nbsp; [Certifications](#certifications-section)", unsafe_allow_html=True)
+    st.markdown("📧 [pandey.shiva623@gmail.com](mailto:pandey.shiva623@gmail.com) &nbsp; | &nbsp; [LinkedIn](https://www.linkedin.com/in/shivaapandey/) &nbsp; | &nbsp; [GitHub](https://github.com/iamshivapandey) | &nbsp; [Certifications](#certifications-section)", unsafe_allow_html=True)
 
 # ---- Profile Summary ----
 st.markdown("<div class='section-header'>👨‍💻 Profile Summary</div>", unsafe_allow_html=True)
