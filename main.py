@@ -7,7 +7,7 @@ st.set_page_config(page_title="Shiva Pandey | Portfolio", page_icon="💼", layo
 
 # ---- Load Image & Resume ----
 profile_img = Image.open("shiva.jpg")  # Your profile image
-resume_file = "Shiva_Resume.pdf"       # Your resume PDF
+resume_file = "Shiva_new_resume.pdf"       # Your resume PDF
 
 # ---- Custom CSS ----
 st.markdown("""
@@ -95,14 +95,12 @@ with col2:
     st.markdown("<div class='subheader'>Data Engineer | Big Data | Cloud | Python</div>", unsafe_allow_html=True)
     with open(resume_file, "rb") as pdf_file:
         st.download_button(label="📄 Download Resume", data=pdf_file, file_name="Shiva_Pandey_Resume.pdf", mime="application/pdf")
-    st.markdown("📧 [pandey.shiva623@gmail.com](mailto:pandey.shiva623@gmail.com) &nbsp; | &nbsp; [LinkedIn](https://www.linkedin.com/in/shivaapandey/) &nbsp; | &nbsp; [GitHub](https://github.com/iamshivapandey)", unsafe_allow_html=True)
+    st.markdown("📧 [pandey.shiva625@gmail.com](mailto:pandey.shiva625@gmail.com) &nbsp; | &nbsp; [LinkedIn](https://www.linkedin.com/in/shivaapandey/) &nbsp; | &nbsp; [GitHub](https://github.com/iamshivapandey) | &nbsp; [Certifications](#certifications-section)", unsafe_allow_html=True)
 
 # ---- Profile Summary ----
 st.markdown("<div class='section-header'>👨‍💻 Profile Summary</div>", unsafe_allow_html=True)
 st.markdown("""
-Data Engineer with almost 2 years of experience in building and optimizing big data pipelines using **Python, PySpark, AWS, Databricks, Kafka, and Iceberg**.  
-Skilled in databases, ETL processes, data lakes, data warehousing, migration, and SQL.  
-Experienced in designing scalable, cloud-native solutions to process large volumes of structured and semi-structured data.
+Data Engineer with 2+ years of experience in building and optimizing big data pipelines using **Python, PySpark, AWS, Databricks, Kafka, Delta Lake and Iceberg**. Skilled in databases, ETL processes, data lakehouse, data warehousing, migration, and SQL. Experienced in designing scalable, cloud-native solutions to process large volumes of structured and semi-structured data.
 """)
 
 # ---- Skills ----
@@ -111,15 +109,46 @@ col1, col2 = st.columns(2)
 with col1:
     st.markdown("""
     - **Languages:** Python, Java, SQL, C  
-    - **Big Data & Cloud:** PySpark, Kafka, Airflow, Glue, EMR, Lambda, ECS, Fargate  
+    - **Big Data & Cloud:** Databricks, PySpark, Kafka, Airflow, Glue, EMR, Lambda, ECS, Fargate  
     - **Databases:** MySQL, PostgreSQL, Snowflake, ClickHouse  
     """)
 with col2:
     st.markdown("""
     - **Tools:** Git, Docker, Bitbucket, Linux  
     - **Visualization:** Power BI, Tableau  
-    - **Concepts:** Data Lakes, Iceberg, Data Warehousing, ETL, ELT, Migration  
+    - **Concepts:** Delta Lake, Iceberg, Data Warehousing, Data Lakehouse, ETL, ELT, Migration  
     """)
+
+
+# CSS for anchor offset
+st.markdown("""
+    <style>
+    .anchor {
+        display: block;
+        position: relative;
+        top: -200px; /* adjust offset */
+        visibility: hidden;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# 📜 Certifications Section (anchor + header together)
+st.markdown(
+    '<span id="certifications-section" class="anchor"></span><div class="section-header">📜 Certifications</div>',
+    unsafe_allow_html=True
+)
+
+certifications = {
+    "Databricks Certified Data Engineer Associate": "https://credentials.databricks.com/6d2895e7-8358-4f7f-846d-d5b758c471bb",
+    "Databricks Lakehouse Fundamentals": "https://credentials.databricks.com/dbf32d2f-7e53-4ebe-b239-cf80ac7eb6f8",
+    "NPTEL Cloud Computing": "https://archive.nptel.ac.in/noc/Ecertificate/?q=NPTEL21CS62S2358036903173368",
+    "Databricks Certified Data Engineer Associate Preparation": "https://www.udemy.com/certificate/UC-5f85d300-97ae-49b0-b4bc-2a4e245cfdb1/",
+    "HackerRank SQL Advanced": "https://www.hackerrank.com/certificates/5782df7ce739"
+    }
+
+with st.expander("Click to view"):
+    for name, link in certifications.items():
+        st.markdown(f"- [{name}]({link})")
 
 # ---- Work History ----
 st.markdown("<div class='section-header'>💼 Work History</div>", unsafe_allow_html=True)
@@ -153,7 +182,9 @@ st.markdown("""
 
 
 st.markdown("""
-- Doing a POC on tools like **Spline**, **DataHub** for tracking Spark job lineage
+- Doing a POC on tools like **Risingwave** streaming database and **Spline**, **DataHub** for tracking Spark job lineage
+- Migrating Data from SAS into **Databricks** Data Lakehouse (Delta Lake)
+- Building streaming and batch pipelines for databricks tables by replacing SAS
 """)
 
 # st.markdown("##### 🔧 Data Engineer | Demandhelm (Neiron India)")
@@ -177,6 +208,15 @@ st.markdown("""
 
 # ---- Projects (Interactive) ----
 st.markdown("<div class='section-header'>🛠️ Projects</div>", unsafe_allow_html=True)
+
+with st.expander("♟️ Chess pieces detection and moves prediction"):
+    st.write("""
+    🔧 **Tech:** Pytorch, Python, OpenCV, Stockfish  
+    - A self-trained ResNet18 model detects chess pieces and their positions from the board
+    - The board state is converted into a FEN (Forsyth–Edwards Notation) string
+    - The FEN is passed to the Stockfish engine, which suggests the best move
+    """)
+    st.markdown("[🔗 GitHub Repo](https://github.com/iamshivapandey/chess_player)")
 
 with st.expander("🌤️ Real-Time Weather Data Pipeline"):
     st.write("""
@@ -291,4 +331,4 @@ components.html(f"""
 
 # ---- Footer ----
 st.markdown("---")
-st.markdown("*Last updated April 2025*")
+st.markdown("*Last updated September 2025*")
