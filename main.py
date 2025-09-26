@@ -6,6 +6,8 @@ from datetime import datetime, timedelta
 import requests, os, json
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
+import pandas as pd
+import plotly.express as px
 
 # ---- Page Config ----
 st.set_page_config(page_title="Shiva Pandey | Portfolio", page_icon="💼", layout="centered")
@@ -217,7 +219,15 @@ st.markdown("""
         margin-top: 40px;
         margin-bottom: 10px;
         animation: bounceIn 2s ease-out;
-
+    }
+    .footer {
+        display: flex;
+        justify-content: flex-end; 
+        align-items: center;        
+        border-bottom: 1px solid #444;
+        margin-top: 40px;
+        margin-bottom: 10px;
+        font-style: italic;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -395,8 +405,8 @@ with st.expander("📈 Crypto Twitter Bot"):
 # ---- Contact Form ----
 st.markdown("<div class='section-header'>📫 Contact Me</div>", unsafe_allow_html=True)
 
-# Get the email token from Streamlit secrets
 email_token = st.secrets["email_token"]
+# email_token = ''
 
 # Now we embed the form using the email_token variable
 components.html(f"""
@@ -463,12 +473,68 @@ components.html(f"""
     <button type="submit">Send Message</button>
   </form>
 </div>
-""", height=600)
+""", height=400)
 
 
-# ---- Footer ----
-st.markdown("---")
-st.markdown("*Last updated September 2025*")
+st.markdown("<div class='footer'>Last updated September 2025</div>", unsafe_allow_html=True)
 
 
-print(capture_visitor_info())
+def visitors_per_city():
+    pipeline = [
+        {"$group": {"_id": "$city", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}}
+    ]
+    data = list(visitors_collection.aggregate(pipeline))
+    return pd.DataFrame(data).rename(columns={"_id": "City", "count": "Visitors"})
+
+# ----------------------
+# Session state
+# ----------------------
+if "show_chart_clicked" not in st.session_state:
+    st.session_state.show_chart_clicked = False
+
+if "password_verified" not in st.session_state:
+    st.session_state.password_verified = False
+
+if "show_full_chart" not in st.session_state:
+    st.session_state.show_full_chart = False
+
+# ----------------------
+# Callbacks
+# ----------------------
+def on_show_chart():
+    st.session_state.show_chart_clicked = True  # show password input
+
+def verify_password():
+    if st.session_state.entered_password == st.secrets["visitors_pass"]:
+        st.session_state.password_verified = True
+        st.session_state.show_full_chart = True
+        st.session_state.show_chart_clicked = False
+    else:
+        st.session_state.password_verified = False
+        st.warning("Incorrect password!")
+
+def close_chart():
+    st.session_state.show_full_chart = False
+    st.session_state.password_verified = False
+
+
+# Show Chart button
+if not st.session_state.show_full_chart:
+    st.button("View All Visitors", on_click=on_show_chart, type="primary")
+
+# Show password input only after clicking Show Chart
+if st.session_state.show_chart_clicked and not st.session_state.show_full_chart:
+    st.text_input("Enter password", key="entered_password", type="password")
+    st.button("Submit Password", on_click=verify_password)
+
+# Full-page chart
+if st.session_state.show_full_chart and st.session_state.password_verified:
+    df = visitors_per_city()
+    if not df.empty:
+        fig = px.pie(df, values='Visitors', names='City', hole=0.5)
+        st.plotly_chart(fig, use_container_width=True)
+    else:
+        st.warning("No visitor found!")
+
+    st.button("Close", on_click=close_chart)

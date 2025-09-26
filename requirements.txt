@@ -2,3 +2,5 @@ streamlit
 Pillow
 streamlit-js-eval
 pymongo[srv]
+plotly
+pandas
