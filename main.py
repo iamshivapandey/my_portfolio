@@ -481,11 +481,24 @@ st.markdown("<div class='footer'>Last updated September 2025</div>", unsafe_allo
 
 def visitors_per_city():
     pipeline = [
-        {"$group": {"_id": "$city", "count": {"$sum": 1}}},
-        {"$sort": {"count": -1}}
+        {
+            "$group": {
+                "_id": {"$ifNull": ["$city", "Unknown"]},
+                "unique_visitors": {"$sum": 1},
+                "total_visits": {"$sum": "$visit_count"}
+            }
+        },
+        {"$sort": {"total_visits": -1}}
     ]
     data = list(visitors_collection.aggregate(pipeline))
-    return pd.DataFrame(data).rename(columns={"_id": "City", "count": "Visitors"})
+    df = pd.DataFrame(data).rename(
+        columns={
+            "_id": "City",
+            "unique_visitors": "Unique Visitors",
+            "total_visits": "Total Visits"
+        }
+    )
+    return df
 
 # ----------------------
 # Session state
@@ -532,7 +545,16 @@ if st.session_state.show_chart_clicked and not st.session_state.show_full_chart:
 if st.session_state.show_full_chart and st.session_state.password_verified:
     df = visitors_per_city()
     if not df.empty:
-        fig = px.pie(df, values='Visitors', names='City', hole=0.5)
+        fig = px.pie(df, values='Unique Visitors', names='City', hole=0.5)
+        fig.update_layout(
+            annotations=[dict(text=f"Total Unique Visitors<br>{df['Unique Visitors'].sum()}", x=0.5, y=0.48, font_size=15, showarrow=False)]
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+        fig = px.pie(df, values='Total Visits', names='City', hole=0.5)
+        fig.update_layout(
+            annotations=[dict(text=f"Total Visitors<br>{df['Total Visits'].sum()}", x=0.5, y=0.48, font_size=20, showarrow=False)]
+        )
         st.plotly_chart(fig, use_container_width=True)
     else:
         st.warning("No visitor found!")
