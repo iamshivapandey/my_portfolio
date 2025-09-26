@@ -1,9 +1,77 @@
 import streamlit.components.v1 as components
 import streamlit as st
 from PIL import Image
+from streamlit_js_eval import streamlit_js_eval
+from datetime import datetime, timedelta
+import requests, os, json
 
 # ---- Page Config ----
 st.set_page_config(page_title="Shiva Pandey | Portfolio", page_icon="💼", layout="centered")
+
+visiting_time_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+visiting_time = datetime.strptime(visiting_time_str,"%Y-%m-%d %H:%M:%S")
+
+
+def capture_visitor_info(log_file="visitor_logs.json"):
+    try:
+        visit_count = 1
+        # Get public IP
+        ip = streamlit_js_eval(
+            js_expressions="fetch('https://api.ipify.org?format=json').then(res => res.json()).then(data => data.ip)",
+            key='get_ip', 
+            want_output=True,
+            )
+
+        if ip is None:
+            return {"message": "Waiting for IP address to be fetched..."}
+
+        # Load existing logs as a dict (instead of list of lines)
+        if os.path.exists(log_file):
+            with open(log_file, "r") as f:
+                try:
+                    logs = json.load(f)
+                except Exception as e:
+                    logs = {}
+        else:
+            logs = {}
+
+        info = logs.get(ip)
+
+        if info:
+            last_visit_str = info['timestamp']
+            last_visit_time = datetime.strptime(last_visit_str, "%Y-%m-%d %H:%M:%S")  
+
+            # If IP already logged, don’t log again
+            if last_visit_time + timedelta(hours=4) > visiting_time:
+                # Less than 4 hours passed since last visit
+                return {"message": "Already logged", "ip": ip}
+            visit_count = info['visit_count'] + 1
+
+        # Get location info
+        geo_data = requests.get(f"https://ipapi.co/{ip}/json/").json()
+
+        geo_keys = ['city','region','country','latitude','longitude']
+        final_geo_data = dict((k, geo_data[k]) for k in geo_keys if k in geo_data)
+
+        # Build record
+        record = {
+            "timestamp": str(visiting_time),
+            'visit_count': visit_count,
+            "location": final_geo_data
+        }
+
+        # Save using IP as key
+        logs[ip] = record
+
+        # Write back to file
+        with open(log_file, "w") as f:
+            json.dump(logs, f, indent=4)
+
+        return {ip: record}
+
+    except Exception as e:
+        return {"error": str(e)}
+
 
 # ---- Load Image & Resume ----
 profile_img = Image.open("shiva.jpg")  # Your profile image
@@ -255,6 +323,7 @@ with st.expander("📈 Crypto Twitter Bot"):
     """)
     st.markdown("[🔗 GitHub Repo](https://github.com/iamshivapandey/twitter_bot)")
 
+capture_visitor_info()
 # ---- Contact Form ----
 st.markdown("<div class='section-header'>📫 Contact Me</div>", unsafe_allow_html=True)
 
