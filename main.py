@@ -12,11 +12,31 @@ st.set_page_config(page_title="Shiva Pandey | Portfolio", page_icon="💼", layo
 
 uri = st.secrets["uri"]
 
-client = MongoClient(uri, server_api=ServerApi('1'))
-db = client['streamlit_portfolio']
-visitors_collection = db['visitors_info']
+@st.cache_resource
+def init_connection():
+    """Initializes and caches the MongoDB client connection."""
+    try:
+        # Create a new client and connect to the server
+        client = MongoClient(uri, server_api=ServerApi('1'))
+        
+        # Send a ping to confirm a successful connection
+        client.admin.command('ping')
+        print("Successfully connected to MongoDB and cached the connection!")
+        
+        return client
+    except Exception as e:
+        st.error(f"Error connecting to MongoDB: {e}")
+        return None
 
-print(f"Connected to database '{db.name}' and collection '{visitors_collection.name}'.")
+client = init_connection()
+
+if client:
+    db = client['streamlit_portfolio']
+    visitors_collection = db['visitors_info']
+
+    print(f"Connected to database '{db.name}' and collection '{visitors_collection.name}'.")
+else:
+    print("Could not connect to the database. Please check your URI and network.")
 
 def log_new_visitor(ip_address, visitor_document):
     """
@@ -365,7 +385,7 @@ with st.expander("📈 Crypto Twitter Bot"):
     """)
     st.markdown("[🔗 GitHub Repo](https://github.com/iamshivapandey/twitter_bot)")
 
-print(capture_visitor_info())
+
 # ---- Contact Form ----
 st.markdown("<div class='section-header'>📫 Contact Me</div>", unsafe_allow_html=True)
 
@@ -443,3 +463,6 @@ components.html(f"""
 # ---- Footer ----
 st.markdown("---")
 st.markdown("*Last updated September 2025*")
+
+
+print(capture_visitor_info())
