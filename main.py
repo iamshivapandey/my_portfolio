@@ -16,10 +16,7 @@ client = MongoClient(uri, server_api=ServerApi('1'))
 db = client['streamlit_portfolio']
 visitors_collection = db['visitors_info']
 
-
-visiting_time_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-visiting_time = datetime.strptime(visiting_time_str,"%Y-%m-%d %H:%M:%S")
-
+print(f"Connected to database '{db.name}' and collection '{visitors_collection.name}'.")
 
 def log_new_visitor(ip_address, visitor_document):
     """
