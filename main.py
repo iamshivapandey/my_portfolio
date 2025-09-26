@@ -38,15 +38,21 @@ if client:
 else:
     print("Could not connect to the database. Please check your URI and network.")
 
-def log_new_visitor(ip_address, visitor_document):
+def log_new_visitor(ip_address, info):
     """
     Inserts a new document for a first-time visitor.
     """
+    visitor_document = dict()
 
     visitor_document['ip_address'] = ip_address
     visitor_document['first_visit'] = datetime.now()
     visitor_document['last_visit'] = datetime.now()
     visitor_document['visit_count'] = 1
+    visitor_document['city'] = info.get('city', 'N/A')
+    visitor_document['region'] = info.get('region', 'N/A')
+    visitor_document['country'] = info.get('country', 'N/A')
+    visitor_document['latitude'] = info.get('latitude', 'N/A')
+    visitor_document['longitude'] = info.get('longitude', 'N/A')
 
 
     try:
