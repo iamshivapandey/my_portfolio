@@ -523,14 +523,17 @@ def verify_password():
         st.session_state.password_verified = True
         st.session_state.show_full_chart = True
         st.session_state.show_chart_clicked = False
+        st.session_state.password_warning = False
     else:
         st.session_state.password_verified = False
-        st.warning("Incorrect password!")
+        st.session_state.password_warning = True
 
 def close_chart():
     st.session_state.show_full_chart = False
     st.session_state.password_verified = False
 
+if "password_warning" not in st.session_state:
+    st.session_state.password_warning = False
 
 # Show Chart button
 if not st.session_state.show_full_chart:
@@ -539,6 +542,9 @@ if not st.session_state.show_full_chart:
 # Show password input only after clicking Show Chart
 if st.session_state.show_chart_clicked and not st.session_state.show_full_chart:
     st.text_input("Enter password", key="entered_password", type="password")
+    warning_placeholder = st.empty()
+    if st.session_state.password_warning:
+        warning_placeholder.warning("Incorrect password!")
     st.button("Submit Password", on_click=verify_password)
 
 # Full-page chart
