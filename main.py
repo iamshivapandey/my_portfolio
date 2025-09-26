@@ -4,74 +4,119 @@ from PIL import Image
 from streamlit_js_eval import streamlit_js_eval
 from datetime import datetime, timedelta
 import requests, os, json
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
 
 # ---- Page Config ----
 st.set_page_config(page_title="Shiva Pandey | Portfolio", page_icon="💼", layout="centered")
+
+uri = st.secrets["uri"]
+
+client = MongoClient(uri, server_api=ServerApi('1'))
+db = client['streamlit_portfolio']
+visitors_collection = db['visitors_info']
+
 
 visiting_time_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 visiting_time = datetime.strptime(visiting_time_str,"%Y-%m-%d %H:%M:%S")
 
 
-def capture_visitor_info(log_file="visitor_logs.json"):
+def log_new_visitor(ip_address, visitor_document):
+    """
+    Inserts a new document for a first-time visitor.
+    """
+
+    visitor_document['ip_address'] = ip_address
+    visitor_document['first_visit'] = datetime.now()
+    visitor_document['last_visit'] = datetime.now()
+    visitor_document['visit_count'] = 1
+
+
     try:
-        visit_count = 1
+        result = visitors_collection.insert_one(visitor_document)
+        print(f"New visitor logged with document ID: {result.inserted_id}")
+        return True
+    except Exception as e:
+        print(f"Error inserting new visitor: {e}")
+        return False
+
+def update_existing_visitor(ip_address):
+    """
+    Finds and updates a document for a repeat visitor.
+    Increments the visit count and updates the last_visit timestamp.
+    """
+    # The filter to find the specific document
+    filter_query = {"ip_address": ip_address}
+
+    # The update operation to increment the count and set the last_visit
+    update_operation = {
+        "$set": {"last_visit": datetime.now()},
+        "$inc": {"visit_count": 1}
+    }
+
+    try:
+        result = visitors_collection.update_one(filter_query, update_operation)
+        if result.modified_count > 0:
+            print(f"Updated record for visitor: {ip_address}")
+            return True
+        else:
+            print(f"Visitor record for {ip_address} not found. No update performed.")
+            return False
+    except Exception as e:
+        print(f"Error updating visitor record: {e}")
+        return False
+
+def find_visitor_by_ip(ip_address):
+    """
+    Retrieves a document for a specific IP address.
+    """
+    # The find_one() method returns the first document that matches the filter, or None.
+    document = visitors_collection.find_one({"ip_address": ip_address})
+    return document
+
+def capture_visitor_info():
+    """
+    Logs visitor information to the MongoDB Atlas database.
+    """
+    try:
         # Get public IP
         ip = streamlit_js_eval(
             js_expressions="fetch('https://api.ipify.org?format=json').then(res => res.json()).then(data => data.ip)",
             key='get_ip', 
             want_output=True,
-            )
+        )
 
         if ip is None:
             return {"message": "Waiting for IP address to be fetched..."}
 
-        # Load existing logs as a dict (instead of list of lines)
-        if os.path.exists(log_file):
-            with open(log_file, "r") as f:
-                try:
-                    logs = json.load(f)
-                except Exception as e:
-                    logs = {}
+        # Check if the visitor already exists in the database
+        existing_visitor = find_visitor_by_ip(ip)
+
+        if existing_visitor:
+            last_visit_time = existing_visitor['last_visit']
+            time_since_last_visit = datetime.now() - last_visit_time
+
+            # Check if enough time has passed since the last visit (more than 4 hours)
+            if time_since_last_visit > timedelta(hours=4):
+                update_existing_visitor(ip)
+                return {"message": "Updated existing visitor log.", "ip": ip}
+            else:
+                return {"message": "Skipping log update (already logged in the last 4 hours).", "ip": ip}
+
         else:
-            logs = {}
+            # Get geolocation info for a new visitor
+            geo_data = requests.get(f"https://ipapi.co/{ip}/json/").json()
 
-        info = logs.get(ip)
+            geo_keys = ['city','region','country','latitude','longitude']
+            final_geo_data = dict((k, geo_data[k]) for k in geo_keys if k in geo_data)
 
-        if info:
-            last_visit_str = info['timestamp']
-            last_visit_time = datetime.strptime(last_visit_str, "%Y-%m-%d %H:%M:%S")  
-
-            # If IP already logged, don’t log again
-            if last_visit_time + timedelta(hours=4) > visiting_time:
-                # Less than 4 hours passed since last visit
-                return {"message": "Already logged", "ip": ip}
-            visit_count = info['visit_count'] + 1
-
-        # Get location info
-        geo_data = requests.get(f"https://ipapi.co/{ip}/json/").json()
-
-        geo_keys = ['city','region','country','latitude','longitude']
-        final_geo_data = dict((k, geo_data[k]) for k in geo_keys if k in geo_data)
-
-        # Build record
-        record = {
-            "timestamp": str(visiting_time),
-            'visit_count': visit_count,
-            "location": final_geo_data
-        }
-
-        # Save using IP as key
-        logs[ip] = record
-
-        # Write back to file
-        with open(log_file, "w") as f:
-            json.dump(logs, f, indent=4)
-
-        return {ip: record}
+            # Log the new visitor
+            log_new_visitor(ip, final_geo_data)
+            
+            return {"message": "New visitor logged successfully.", "ip": ip}
 
     except Exception as e:
         return {"error": str(e)}
-
 
 # ---- Load Image & Resume ----
 profile_img = Image.open("shiva.jpg")  # Your profile image
@@ -323,7 +368,7 @@ with st.expander("📈 Crypto Twitter Bot"):
     """)
     st.markdown("[🔗 GitHub Repo](https://github.com/iamshivapandey/twitter_bot)")
 
-capture_visitor_info()
+print(capture_visitor_info())
 # ---- Contact Form ----
 st.markdown("<div class='section-header'>📫 Contact Me</div>", unsafe_allow_html=True)
 
