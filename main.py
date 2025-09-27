@@ -566,3 +566,5 @@ if st.session_state.show_full_chart and st.session_state.password_verified:
         st.warning("No visitor found!")
 
     st.button("Close", on_click=close_chart)
+
+print(capture_visitor_info())
